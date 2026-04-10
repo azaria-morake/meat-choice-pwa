@@ -1,0 +1,337 @@
+import React, { useState } from 'react';
+import { Search, Home, Grid, Heart, MapPin, X, Star, Beef, Package, Fish, Coffee } from 'lucide-react';
+
+// --- MOCK DATA ---
+const CATEGORIES = ['All', 'Meat', 'Deli', 'Pantry', 'Household'];
+
+const MOCK_PRODUCTS = [
+  {
+    id: 1,
+    name: 'Deli Goudveld Wors',
+    category: 'Meat',
+    price: 79.99,
+    originalPrice: 89.99,
+    unit: 'p/kg',
+    rating: 4.8,
+    reviews: 124,
+    imageIcon: <Beef size={48} className="text-red-500 opacity-80" />,
+    color: 'bg-red-50',
+    nutrition: { calories: 280, protein: '14g', fat: '24g', carbs: '2g', sodium: '650mg' },
+    description: 'Premium quality thick boerewors. Perfect for your weekend braai.'
+  },
+  {
+    id: 2,
+    name: 'Papa Super Maize Meal',
+    category: 'Pantry',
+    price: 109.99,
+    originalPrice: null,
+    unit: '12.5kg',
+    rating: 4.9,
+    reviews: 312,
+    imageIcon: <Package size={48} className="text-amber-500 opacity-80" />,
+    color: 'bg-amber-50',
+    nutrition: { calories: 340, protein: '8g', fat: '1g', carbs: '74g', sodium: '0mg' },
+    description: 'The Nation\'s Brand. Go back to the original taste!'
+  },
+  {
+    id: 3,
+    name: 'Lucky Star Pilchards (Tomato)',
+    category: 'Pantry',
+    price: 25.00,
+    originalPrice: 28.99,
+    unit: '410g',
+    rating: 4.7,
+    reviews: 89,
+    imageIcon: <Fish size={48} className="text-blue-500 opacity-80" />,
+    color: 'bg-blue-50',
+    nutrition: { calories: 150, protein: '18g', fat: '8g', carbs: '1g', sodium: '400mg' },
+    description: 'High in Omega 3. Buy 2 for R50 special!'
+  },
+  {
+    id: 4,
+    name: 'Real Tea Tagless Teabags',
+    category: 'Pantry',
+    price: 29.99,
+    originalPrice: 35.99,
+    unit: '100s',
+    rating: 4.5,
+    reviews: 45,
+    imageIcon: <Coffee size={48} className="text-orange-500 opacity-80" />,
+    color: 'bg-orange-50',
+    nutrition: { calories: 0, protein: '0g', fat: '0g', carbs: '0g', sodium: '0mg' },
+    description: 'The health for every day. Quality tips.'
+  },
+  {
+    id: 5,
+    name: 'Bulk Pork Pack',
+    category: 'Meat',
+    price: 99.99,
+    originalPrice: null,
+    unit: '2kg',
+    rating: 4.6,
+    reviews: 67,
+    imageIcon: <Beef size={48} className="text-pink-500 opacity-80" />,
+    color: 'bg-pink-50',
+    nutrition: { calories: 242, protein: '27g', fat: '14g', carbs: '0g', sodium: '62mg' },
+    description: 'Fresh to frozen bulk pork cuts.'
+  },
+  {
+    id: 6,
+    name: 'Sunshine Brown Sugar',
+    category: 'Pantry',
+    price: 39.99,
+    originalPrice: null,
+    unit: '2kg',
+    rating: 4.8,
+    reviews: 156,
+    imageIcon: <Package size={48} className="text-amber-700 opacity-80" />,
+    color: 'bg-yellow-50',
+    nutrition: { calories: 380, protein: '0g', fat: '0g', carbs: '98g', sodium: '1mg' },
+    description: 'Natural brown sugar.'
+  }
+];
+
+export default function App() {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isListAdded, setIsListAdded] = useState(false);
+
+  const filteredProducts = MOCK_PRODUCTS.filter(p => activeCategory === 'All' || p.category === activeCategory);
+
+  const handleOpenProduct = (product) => {
+    setSelectedProduct(product);
+    setIsListAdded(false);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
+  return (
+    <div className="max-w-md mx-auto bg-[#F9FAFB] min-h-screen relative shadow-2xl overflow-hidden flex flex-col font-sans text-slate-800">
+      
+      {/* --- HEADER --- */}
+      <header className="bg-white px-5 pt-10 pb-4 flex justify-between items-center sticky top-0 z-10 border-b border-slate-100">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+            Meat <span className="text-red-600">Choice</span>
+          </h1>
+          <p className="text-xs text-slate-400 font-medium tracking-wide">FRESH TO FROZEN</p>
+        </div>
+        <button className="bg-slate-100 p-2.5 rounded-full hover:bg-slate-200 transition-colors">
+          <Search size={20} className="text-slate-600" />
+        </button>
+      </header>
+
+      {/* --- AISLE-SYNC CATEGORIES --- */}
+      <div className="bg-white border-b border-slate-100 sticky top-[88px] z-10">
+        <div className="flex overflow-x-auto hide-scrollbar px-5 py-3 gap-3">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
+                activeCategory === cat
+                  ? 'bg-red-600 text-white shadow-md shadow-red-200'
+                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* --- PRODUCT GRID --- */}
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-28">
+        <div className="grid grid-cols-2 gap-4">
+          {filteredProducts.map((product) => (
+            <div 
+              key={product.id} 
+              onClick={() => handleOpenProduct(product)}
+              className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 cursor-pointer hover:shadow-md transition-shadow flex flex-col h-full"
+            >
+              {/* Product Image Placeholder */}
+              <div className={`w-full aspect-square ${product.color} rounded-xl mb-4 flex items-center justify-center relative overflow-hidden`}>
+                {product.originalPrice && (
+                  <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                    SALE
+                  </div>
+                )}
+                {product.imageIcon}
+              </div>
+
+              {/* Product Info */}
+              <div className="flex-1 flex flex-col">
+                <div className="flex items-center gap-1 mb-1">
+                  <Star size={12} className="fill-amber-400 text-amber-400" />
+                  <span className="text-[11px] font-semibold text-slate-500">{product.rating}</span>
+                </div>
+                
+                <h3 className="text-sm font-semibold leading-tight text-slate-800 mb-1 flex-1">
+                  {product.name} <span className="text-slate-400 font-normal">({product.unit})</span>
+                </h3>
+                
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-lg font-black text-red-600">R{product.price}</span>
+                  {product.originalPrice && (
+                    <span className="text-xs font-semibold text-slate-400 line-through">
+                      R{product.originalPrice}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* --- BOTTOM NAVBAR --- */}
+      <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 px-6 py-4 pb-6 flex justify-between items-center z-20">
+        <button className="flex flex-col items-center gap-1 text-red-600">
+          <Home size={22} className="fill-red-50" />
+          <span className="text-[10px] font-bold">Home</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+          <Grid size={22} />
+          <span className="text-[10px] font-bold">Aisles</span>
+        </button>
+        {/* Floating Action Button for List */}
+        <button className="flex flex-col items-center justify-center bg-slate-900 text-white h-14 w-14 rounded-full shadow-lg -mt-8 border-4 border-[#F9FAFB]">
+          <Heart size={24} />
+        </button>
+        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+          <Package size={22} />
+          <span className="text-[10px] font-bold">Specials</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+          <MapPin size={22} />
+          <span className="text-[10px] font-bold">Stores</span>
+        </button>
+      </nav>
+
+      {/* --- NUTRITIONAL LABEL MODAL (DRAWER) --- */}
+      {/* Overlay */}
+      {selectedProduct && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 max-w-md mx-auto transition-opacity"
+          onClick={handleCloseModal}
+        />
+      )}
+      
+      {/* Drawer */}
+      <div 
+        className={`fixed bottom-0 w-full max-w-md bg-white rounded-t-3xl z-40 p-6 shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          selectedProduct ? 'translate-y-0' : 'translate-y-full'
+        }`}
+        style={{ height: '85vh' }}
+      >
+        {selectedProduct && (
+          <div className="h-full flex flex-col">
+            {/* Drawer Handle */}
+            <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6" />
+            
+            <button onClick={handleCloseModal} className="absolute top-5 right-5 p-2 bg-slate-100 rounded-full text-slate-500">
+              <X size={20} />
+            </button>
+
+            <div className="flex-1 overflow-y-auto hide-scrollbar pb-6">
+              {/* Product Header in Modal */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-20 h-20 rounded-2xl ${selectedProduct.color} flex items-center justify-center flex-shrink-0`}>
+                  {selectedProduct.imageIcon}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold leading-tight">{selectedProduct.name}</h2>
+                  <p className="text-sm text-slate-500">{selectedProduct.unit} • Aisle: {selectedProduct.category}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Star size={14} className="fill-amber-400 text-amber-400" />
+                    <span className="text-sm font-bold">{selectedProduct.rating}</span>
+                    <span className="text-xs text-slate-400">({selectedProduct.reviews} reviews)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Price Block */}
+              <div className="bg-slate-50 p-4 rounded-2xl flex justify-between items-center mb-8 border border-slate-100">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Current Price</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black text-red-600">R{selectedProduct.price}</span>
+                    {selectedProduct.originalPrice && (
+                      <span className="text-sm font-semibold text-slate-400 line-through">
+                        R{selectedProduct.originalPrice}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Nutritional Label Design */}
+              <div className="border-4 border-slate-900 bg-white p-4 font-sans mb-6">
+                <h3 className="text-3xl font-black border-b-8 border-slate-900 pb-1 mb-2 tracking-tighter">Nutrition Facts</h3>
+                <div className="flex justify-between text-sm font-bold border-b-4 border-slate-900 pb-1 mb-2">
+                  <span>Serving Size</span>
+                  <span>100g</span>
+                </div>
+                
+                <p className="text-xs font-bold mb-1">Amount Per Serving</p>
+                <div className="flex justify-between items-end border-b-4 border-slate-900 pb-1 mb-2">
+                  <span className="text-2xl font-black">Calories</span>
+                  <span className="text-2xl font-black">{selectedProduct.nutrition.calories}</span>
+                </div>
+
+                <div className="text-sm">
+                  <div className="flex justify-between border-b border-slate-300 py-1">
+                    <span className="font-bold">Total Fat <span className="font-normal">{selectedProduct.nutrition.fat}</span></span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-300 py-1">
+                    <span className="font-bold">Sodium <span className="font-normal">{selectedProduct.nutrition.sodium}</span></span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-300 py-1">
+                    <span className="font-bold">Total Carbohydrate <span className="font-normal">{selectedProduct.nutrition.carbs}</span></span>
+                  </div>
+                  <div className="flex justify-between border-b-[4px] border-slate-900 py-1">
+                    <span className="font-bold">Protein <span className="font-normal">{selectedProduct.nutrition.protein}</span></span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-2 leading-tight">
+                  *The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet.
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-bold text-slate-800 mb-2">Description</h4>
+                <p className="text-sm text-slate-500 leading-relaxed">{selectedProduct.description}</p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-4 border-t border-slate-100 flex gap-3">
+              <button 
+                onClick={() => setIsListAdded(!isListAdded)}
+                className={`flex-1 py-4 rounded-xl font-bold text-sm transition-all ${
+                  isListAdded 
+                    ? 'bg-slate-100 text-slate-800 border-2 border-slate-200' 
+                    : 'bg-red-600 text-white shadow-lg shadow-red-200 hover:bg-red-700'
+                }`}
+              >
+                {isListAdded ? '✓ Added to Digital List' : 'Add to Digital List'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
+    </div>
+  );
+}
