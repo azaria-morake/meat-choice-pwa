@@ -122,9 +122,12 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#18181B] text-foreground;
   }
   html {
     @apply font-sans;
+  }
+  button, a, [role="button"], .cursor-pointer {
+    cursor: pointer !important;
   }
 }
