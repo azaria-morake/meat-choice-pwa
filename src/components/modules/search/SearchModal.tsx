@@ -9,10 +9,10 @@ import { toast } from 'sonner';
 export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [products, setProducts] = useState<any[]>([]);
+  const { addItem, setSelectedProduct } = useBudgetStore();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const ITEMS_PER_PAGE = 4;
-  const addItem = useBudgetStore(state => state.addItem);
 
   useEffect(() => {
     if (!isOpen) {
@@ -30,7 +30,22 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       }
       setLoading(true);
       try {
-        const results = await client.fetch(`*[_type == "product" && name match "*${query}*"] { _id, name, price, originalPrice, category, "image": image.asset->url, aisleLocation }`);
+        const results = await client.fetch(
+          `*[_type == "product" && (name match $searchQuery || subcategory->name match $searchQuery || subcategory->category->name match $searchQuery)] { 
+            _id, 
+            name, 
+            price, 
+            originalPrice, 
+            "subcategory": subcategory->name,
+            "category": subcategory->category->name, 
+            "image": image.asset->url, 
+            aisleLocation,
+            unit,
+            stockStatus,
+            nutrition 
+          }`,
+          { searchQuery: `${query}*` }
+        );
         setProducts(results || []);
       } catch (e) {
         // Minimal Mock Fallback so app doesn't break locally without sanity keys
@@ -59,7 +74,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-start md:items-center justify-center p-4 pt-20 md:pt-4 animate-in fade-in duration-200" onClick={onClose}>
-      <div className="bg-white w-full max-w-lg rounded-[32px] p-6 shadow-2xl flex flex-col md:max-h-[85vh]" onClick={e => e.stopPropagation()}>
+      <div className="bg-white w-full max-w-lg rounded-[40px] p-6 shadow-2xl flex flex-col md:max-h-[85vh]" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-black uppercase tracking-tight">Search</h2>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-slate-200 rounded-full transition-colors">
@@ -84,14 +99,21 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
             <div className="text-center py-10 font-bold text-slate-400 uppercase tracking-widest text-xs">Searching...</div>
           ) : products.length > 0 ? (
             currentProducts.map(product => (
-              <div key={product._id} className="flex items-center justify-between bg-white border-2 border-slate-100 p-4 rounded-2xl shadow-sm">
+              <div 
+                key={product._id} 
+                onClick={() => {
+                  setSelectedProduct(product);
+                }}
+                className="flex items-center justify-between bg-white border-2 border-slate-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-red-100 transition-colors"
+              >
                 <div className="flex flex-col pr-4">
                   <span className="text-[10px] font-black uppercase text-slate-500 mb-1">{product.category || 'Item'}</span>
                   <span className="text-sm font-black text-slate-800 leading-tight mb-1">{product.name}</span>
                   <span className="text-sm font-black text-[#E11D48]">R{product.price.toFixed(2)}</span>
                 </div>
                 <button 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     addItem({ ...product, id: product._id });
                     toast.success(`${product.name} added to list`);
                   }}

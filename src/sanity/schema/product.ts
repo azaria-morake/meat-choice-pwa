@@ -26,10 +26,10 @@ export default {
       options: { hotspot: true },
     },
     {
-      name: 'category',
-      title: 'Category',
+      name: 'subcategory',
+      title: 'Sub-category',
       type: 'reference',
-      to: [{ type: 'category' }],
+      to: [{ type: 'subcategory' }],
       validation: (Rule: any) => Rule.required(),
     },
     {

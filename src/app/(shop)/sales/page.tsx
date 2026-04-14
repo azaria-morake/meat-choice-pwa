@@ -3,7 +3,7 @@ import { ACTIVE_CATALOGUES_QUERY } from '@/sanity/lib/queries';
 import Link from 'next/link';
 import { Calendar, ChevronRight, Star } from 'lucide-react';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function SalesPage() {
   let catalogues: any = null;

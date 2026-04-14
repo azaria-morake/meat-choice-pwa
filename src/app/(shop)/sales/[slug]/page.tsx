@@ -2,7 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { CATALOGUE_BY_SLUG_QUERY } from '@/sanity/lib/queries';
 import { SalesSlugClient } from './SalesSlugClient';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function CatalogueDetailPage({ params }: { params: { slug: string } }) {
   let catalogue: any = null;

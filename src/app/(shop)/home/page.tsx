@@ -2,7 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { ALL_PRODUCTS_QUERY, ALL_CATEGORIES_QUERY } from '@/sanity/lib/queries';
 import { HomeClient } from './HomeClient';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function HomePage() {
   let products = null;

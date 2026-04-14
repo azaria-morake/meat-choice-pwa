@@ -1,11 +1,24 @@
-export default function AislesPage() {
-  return (
-    <div className="p-8 text-center mt-12">
-      <h2 className="text-2xl font-black uppercase tracking-tight mb-2">Aisles Mapper</h2>
-      <p className="text-slate-500 font-bold text-sm">Visual store map and sections engine mapping physical to digital.</p>
-      <div className="mt-8 bg-slate-100 rounded-3xl p-8 border border-slate-200 border-dashed text-slate-400 font-black uppercase text-[10px] tracking-widest">
-        Integration Placeholder
-      </div>
-    </div>
-  );
+import { client } from '@/sanity/lib/client';
+import { AislesClient } from './AislesClient';
+
+async function getAislesData() {
+  const query = `*[_type == "category"] | order(name asc) {
+    _id,
+    name,
+    "slug": slug.current,
+    "subcategories": *[_type == "subcategory" && category._ref == ^._id] | order(name asc) {
+      _id,
+      name,
+      "slug": slug.current,
+      "productCount": count(*[_type == "product" && subcategory._ref == ^._id])
+    }
+  }`;
+  
+  return await client.fetch(query);
+}
+
+export default async function AislesPage() {
+  const categories = await getAislesData();
+  
+  return <AislesClient categories={categories} />;
 }

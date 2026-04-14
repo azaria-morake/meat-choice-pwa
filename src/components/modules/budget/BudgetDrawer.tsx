@@ -29,9 +29,8 @@ export function BudgetDrawer() {
     <Drawer open={isListOpen} onOpenChange={setIsListOpen} direction={isDesktop ? 'right' : 'bottom'}>
       <DrawerContent className={`bg-white px-8 pb-8 pt-4 md:pt-12 shadow-2xl flex flex-col ${isDesktop ? 'h-full max-h-screen max-w-md rounded-l-[40px] ml-auto mr-0' : 'max-h-[85vh] max-w-md mx-auto rounded-t-[40px]'}`}>
         <DrawerTitle className="sr-only">Budget List</DrawerTitle>
-        {!isDesktop && <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />}
         
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 mt-6 md:mt-0">
           <h2 className="text-2xl font-black uppercase tracking-tight">My Budget List</h2>
           {confirmClear ? (
             <button 
@@ -52,21 +51,22 @@ export function BudgetDrawer() {
             <div className="text-center py-12 text-slate-400 uppercase font-black tracking-widest bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl">List is empty</div>
           ) : (
             basket.map(item => (
-              <div key={item.id} className="relative group overflow-hidden rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between p-4 bg-white border border-slate-100 relative z-10">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-slate-100 w-12 h-12 rounded-[14px] flex items-center justify-center overflow-hidden">
-                      {item.image ? <img src={item.image} alt={item.name} className="object-cover w-full h-full" /> : <div className="text-[9px] font-black text-slate-300">N/A</div>}
-                    </div>
-                    <div className="flex flex-col justify-center">
-                      <p className="text-xs font-black uppercase leading-tight line-clamp-1">{item.name}</p>
-                      <p className="text-[11px] font-bold text-red-600 mt-0.5">R{(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
+              <div key={item.id} className="relative group overflow-hidden rounded-2xl shadow-sm border border-slate-100 bg-white p-4">
+                <div className="flex gap-4 items-start relative z-10">
+                  <div className="bg-slate-100 shrink-0 w-14 h-14 min-w-[56px] rounded-[14px] flex items-center justify-center overflow-hidden">
+                    {item.image ? <img src={item.image} alt={item.name} className="object-cover w-full h-full" /> : <div className="text-[9px] font-black text-slate-300">N/A</div>}
                   </div>
                   
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <p className="text-xs font-black uppercase leading-tight text-blue-950 mb-1">{item.name}</p>
+                    <p className="text-[11px] font-bold text-red-600">R{item.price.toFixed(2)}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-end gap-3 mt-3 border-t border-slate-100 pt-3 relative z-10">
                   <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-inner">
                     <button onClick={() => updateQuantity(item.id, -1)} className="text-slate-400 hover:text-slate-800 transition-colors p-1"><Minus size={14} strokeWidth={3} /></button>
-                    <span className="text-xs font-black min-w-[20px] text-center shrink-0">{item.quantity}</span>
+                    <span className="text-xs font-black min-w-[20px] text-center shrink-0 text-blue-950">{item.quantity}</span>
                     <button onClick={() => updateQuantity(item.id, 1)} className="text-red-600 hover:text-red-700 transition-colors p-1"><Plus size={14} strokeWidth={3} /></button>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export function BudgetDrawer() {
               <div className="space-y-3 opacity-70 hover:opacity-100 transition-opacity duration-300">
                 {removedItems.map(item => (
                    <div key={item.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200 group relative">
-                     <span className="text-[10px] font-bold text-slate-500 line-through truncate max-w-[150px]">{item.name}</span>
+                     <span className="text-[10px] font-bold text-slate-500 line-through">{item.name}</span>
                      <button 
                        onClick={() => reAddItem(item.id)}
                        className="bg-slate-200 hover:bg-slate-900 group-hover:text-white text-slate-500 text-[9px] font-black uppercase px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
@@ -106,7 +106,7 @@ export function BudgetDrawer() {
           <button 
             onClick={handleShare}
             disabled={basket.length === 0}
-            className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 disabled:opacity-50 transition-all hover:bg-red-500"
+            className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:bg-red-500"
           >
             <Share2 size={18} /> Share List
           </button>

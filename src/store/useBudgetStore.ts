@@ -23,6 +23,8 @@ interface BudgetState {
   getTotalItems: () => number;
   isListOpen: boolean;
   setIsListOpen: (open: boolean) => void;
+  selectedProduct: any | null;
+  setSelectedProduct: (product: any | null) => void;
 }
 
 export const useBudgetStore = create<BudgetState>()(
@@ -107,9 +109,17 @@ export const useBudgetStore = create<BudgetState>()(
       getTotal: () => get().basket.reduce((sum, item) => sum + item.price * item.quantity, 0),
 
       getTotalItems: () => get().basket.reduce((sum, item) => sum + item.quantity, 0),
+
+      selectedProduct: null,
+      setSelectedProduct: (product) => set({ selectedProduct: product }),
     }),
     {
       name: 'meat-choice-budget-storage', // localStorage key
+      partialize: (state) => ({ 
+        basket: state.basket,
+        removedItems: state.removedItems,
+        isListOpen: state.isListOpen 
+      }), // Exclude selectedProduct from persistence
     }
   )
 );

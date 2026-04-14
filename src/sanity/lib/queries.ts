@@ -15,7 +15,8 @@ export const CATALOGUE_BY_SLUG_QUERY = groq`
       nutrition,
       unit,
       stockStatus,
-      "category": category->name,
+      "subcategory": subcategory->name,
+      "category": subcategory->category->name,
       "image": image.asset->url
     }
   }
@@ -42,7 +43,8 @@ export const ALL_PRODUCTS_QUERY = groq`
     nutrition,
     unit,
     stockStatus,
-    "category": category->name,
+    "subcategory": subcategory->name,
+    "category": subcategory->category->name,
     "image": image.asset->url
   }
 `;
@@ -51,5 +53,13 @@ export const ALL_CATEGORIES_QUERY = groq`
   *[_type == "category"]{
     "slug": slug.current,
     name
+  }
+`;
+
+export const ALL_SUBCATEGORIES_QUERY = groq`
+  *[_type == "subcategory"]{
+    "slug": slug.current,
+    name,
+    "category": category->name
   }
 `;
