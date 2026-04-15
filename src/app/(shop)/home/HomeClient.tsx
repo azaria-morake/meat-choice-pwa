@@ -1,23 +1,33 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBudgetStore } from '@/store/useBudgetStore';
 
 export function HomeClient({ initialProducts, initialCategories }: any) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'All');
   const [activeSubcategory, setActiveSubcategory] = useState(searchParams.get('subcategory') || 'All');
   const { addItem, selectedProduct, setSelectedProduct } = useBudgetStore();
+
+  useEffect(() => {
+    setActiveCategory(searchParams.get('category') || 'All');
+    setActiveSubcategory(searchParams.get('subcategory') || 'All');
+  }, [searchParams]);
 
   const uniqueNames: string[] = Array.from(new Set(initialCategories.map((c: any) => c.name as string)));
   const categories: string[] = ['All', ...uniqueNames];
 
   const filteredProducts = initialProducts.filter((p: any) => {
-    const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
-    const matchesSubcategory = activeSubcategory === 'All' || p.subcategory === activeSubcategory;
+    const pCat = p.category?.trim() || '';
+    const pSub = p.subcategory?.trim() || '';
+    
+    const matchesCategory = activeCategory === 'All' || pCat === activeCategory.trim();
+    const matchesSubcategory = activeSubcategory === 'All' || pSub === activeSubcategory.trim();
+    
     return matchesCategory && matchesSubcategory;
   });
 
@@ -28,8 +38,14 @@ export function HomeClient({ initialProducts, initialCategories }: any) {
           <button 
             key={cat} 
             onClick={() => {
-              setActiveCategory(cat);
-              setActiveSubcategory('All');
+              const params = new URLSearchParams(searchParams);
+              if (cat === 'All') {
+                params.delete('category');
+              } else {
+                params.set('category', cat);
+              }
+              params.delete('subcategory');
+              router.push(`/home?${params.toString()}`);
             }}
             className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all whitespace-nowrap border-2 ${
               activeCategory === cat 
@@ -47,7 +63,10 @@ export function HomeClient({ initialProducts, initialCategories }: any) {
           <div className="bg-teal-500 text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-lg border-2 border-blue-950 shadow-[4px_4px_0_0_#2B2B2B] flex items-center gap-2">
             <span>Aisle: {activeSubcategory}</span>
             <button 
-              onClick={() => setActiveSubcategory('All')}
+              onClick={() => {
+                const categoryId = searchParams.get('categoryId');
+                router.push(`/aisles${categoryId ? `?expanded=${categoryId}` : ''}`);
+              }}
               className="hover:scale-110 transition-transform"
             >
               <X size={12} strokeWidth={4} />

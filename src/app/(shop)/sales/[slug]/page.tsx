@@ -4,19 +4,20 @@ import { SalesSlugClient } from './SalesSlugClient';
 
 export const revalidate = 60;
 
-export default async function CatalogueDetailPage({ params }: { params: { slug: string } }) {
+export default async function CatalogueDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   let catalogue: any = null;
   try {
-    catalogue = await client.fetch(CATALOGUE_BY_SLUG_QUERY, { slug: params.slug });
+    catalogue = await client.fetch(CATALOGUE_BY_SLUG_QUERY, { slug });
   } catch (error) {
     console.warn('Sanity fetch failed (likely using dummy credentials). Falling back to mock data.');
   }
   
   if (!catalogue) {
     // If not found in Sanity and using Mock Data, generate a mock catalogue for demonstration
-    if (params.slug === 'sep-26' || params.slug === 'aug-26') {
+    if (slug === 'sep-26' || slug === 'aug-26') {
       const MOCK = {
-        title: params.slug === 'sep-26' ? 'Sizzling September Savings' : 'Mid-Month Choice Deals',
+        title: slug === 'sep-26' ? 'Sizzling September Savings' : 'Mid-Month Choice Deals',
         validTo: '2026-04-12T23:59:00.000Z', // Make it expire in 1 day for demo
         products: [
           { _id: '1', name: 'Deli Goudveld Wors', category: 'Meat', price: 79.99, originalPrice: 89.99, unit: 'p/kg', stockStatus: 'in_stock', aisleLocation: 'Aisle 3B' },

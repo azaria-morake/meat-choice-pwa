@@ -251,6 +251,8 @@ async function inject() {
 
   console.log('🚀 Starting data injection...');
 
+  const saleProductRefs = [];
+
   for (const cat of data) {
     const catSlug = cat.category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const categoryDoc = {
@@ -266,48 +268,69 @@ async function inject() {
     });
 
     for (const sub of cat.subcategories) {
+      // ... (subcategory logic)
       const subSlug = sub.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const subcategoryDoc = {
+      const createdSubcategory = await client.createOrReplace({
+        _id: `sub-${subSlug}`,
         _type: 'subcategory',
         name: sub.name,
         slug: { _type: 'slug', current: subSlug },
-        category: {
-          _type: 'reference',
-          _ref: createdCategory._id,
-        },
-      };
-
-      console.log(`  └─ Creating Sub-category: ${sub.name}`);
-      const createdSubcategory = await client.createOrReplace({
-        _id: `sub-${subSlug}`,
-        ...subcategoryDoc,
+        category: { _type: 'reference', _ref: createdCategory._id },
       });
 
       for (const prod of sub.products) {
         const prodSlug = prod.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        
+        // Randomly assign sale price to ~20% of products
+        const isOnSale = Math.random() < 0.2;
+        const originalPrice = isOnSale ? Math.ceil(prod.price * 1.25) : null;
+
         const productDoc = {
           _type: 'product',
           name: prod.name,
           slug: { _type: 'slug', current: prodSlug },
-          subcategory: {
-            _type: 'reference',
-            _ref: createdSubcategory._id,
-          },
+          subcategory: { _type: 'reference', _ref: createdSubcategory._id },
           price: prod.price,
-          originalPrice: prod.originalPrice || null,
+          originalPrice: originalPrice,
           unit: prod.unit,
           aisleLocation: prod.aisle,
           stockStatus: 'in_stock',
           nutrition: getNutrition(prod.name, sub.name),
         };
 
-        console.log(`    ├── Creating Product: ${prod.name}`);
+        console.log(`    ├── Creating Product: ${prod.name} ${isOnSale ? '(SALE!)' : ''}`);
         await client.createOrReplace({
           _id: `prod-${prodSlug}`,
           ...productDoc,
         });
+
+        if (isOnSale) {
+          saleProductRefs.push({
+            _key: `key-${prodSlug}`,
+            _type: 'reference',
+            _ref: `prod-${prodSlug}`
+          });
+        }
       }
     }
+  }
+
+  // Create an active catalogue with all sale items
+  if (saleProductRefs.length > 0) {
+    console.log(`📦 Creating Catalogue "Sizzling Savings" with ${saleProductRefs.length} items...`);
+    const catalogueDoc = {
+      _type: 'catalogue',
+      title: 'Sizzling Savings',
+      slug: { _type: 'slug', current: 'sizzling-savings' },
+      validFrom: new Date().toISOString(),
+      validTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+      products: saleProductRefs
+    };
+
+    await client.createOrReplace({
+      _id: 'catalogue-sizzling-savings',
+      ...catalogueDoc
+    });
   }
 
   console.log('✅ Injection complete!');

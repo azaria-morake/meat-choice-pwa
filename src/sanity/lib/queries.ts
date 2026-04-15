@@ -17,6 +17,7 @@ export const CATALOGUE_BY_SLUG_QUERY = groq`
       stockStatus,
       "subcategory": subcategory->name,
       "category": subcategory->category->name,
+      "categoryId": subcategory->category->_id,
       "image": image.asset->url
     }
   }
@@ -45,6 +46,7 @@ export const ALL_PRODUCTS_QUERY = groq`
     stockStatus,
     "subcategory": subcategory->name,
     "category": subcategory->category->name,
+    "categoryId": subcategory->category->_id,
     "image": image.asset->url
   }
 `;

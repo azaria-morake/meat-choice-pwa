@@ -1,0 +1,75 @@
+## Error Type
+Console TypeError
+
+## Error Message
+Failed to fetch
+
+Next.js version: 16.2.3 (Turbopack)
+
+## Error Type
+Console TypeError
+
+## Error Message
+Failed to fetch
+
+Next.js version: 16.2.3 (Turbopack)
+
+## Error Type
+Console TypeError
+
+## Error Message
+Failed to fetch
+
+Next.js version: 16.2.3 (Turbopack)
+
+Console TypeError
+
+
+
+Failed to fetch
+Call Stack
+21
+
+Hide 21 ignore-listed frame(s)
+createFetch
+node_modules/next/src/client/components/router-reducer/fetch-server-response.ts (500:19)
+fetchServerResponse
+node_modules/next/src/client/components/router-reducer/fetch-server-response.ts (186:23)
+fetchMissingDynamicData
+node_modules/next/src/client/components/router-reducer/ppr-navigations.ts (1605:45)
+spawnDynamicRequests
+node_modules/next/src/client/components/router-reducer/ppr-navigations.ts (1303:33)
+navigateToKnownRoute
+node_modules/next/src/client/components/segment-cache/navigation.ts (268:27)
+refreshDynamicData
+node_modules/next/src/client/components/router-reducer/reducers/refresh-reducer.ts (81:30)
+hmrRefreshReducer
+node_modules/next/src/client/components/router-reducer/reducers/hmr-refresh-reducer.ts (9:28)
+clientReducer
+node_modules/next/src/client/components/router-reducer/router-reducer.ts (42:31)
+Object.action
+node_modules/next/src/client/components/app-router-instance.ts (229:29)
+runAction
+node_modules/next/src/client/components/app-router-instance.ts (109:36)
+dispatchAction
+node_modules/next/src/client/components/app-router-instance.ts (186:5)
+Object.dispatch
+node_modules/next/src/client/components/app-router-instance.ts (227:7)
+<unknown>
+node_modules/next/src/client/components/use-action-queue.ts (94:21)
+startTransition
+node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (9151:27)
+nextDispatch
+node_modules/next/src/client/components/use-action-queue.ts (93:7)
+dispatchAppRouterAction
+node_modules/next/src/client/components/use-action-queue.ts (39:3)
+<unknown>
+node_modules/next/src/client/components/app-router-instance.ts (492:32)
+startTransition
+node_modules/next/dist/compiled/react/cjs/react.development.js (554:27)
+Object.hmrRefresh
+node_modules/next/src/client/components/app-router-instance.ts (491:22)
+processMessage
+node_modules/next/src/client/dev/hot-reloader/app/hot-reloader-app.tsx (452:38)
+WebSocket.handleMessage
+node_modules/next/src/client/dev/hot-reloader/app/web-socket.ts (107:23)

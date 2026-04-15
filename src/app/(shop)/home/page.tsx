@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { client } from '@/sanity/lib/client';
 import { ALL_PRODUCTS_QUERY, ALL_CATEGORIES_QUERY } from '@/sanity/lib/queries';
 import { HomeClient } from './HomeClient';
@@ -19,10 +20,12 @@ export default async function HomePage() {
   const isSanityEmpty = !products || products.length === 0;
 
   return (
-    <HomeClient 
-      initialProducts={isSanityEmpty ? MOCK_PRODUCTS : products} 
-      initialCategories={isSanityEmpty ? MOCK_CATEGORIES : categories} 
-    />
+    <Suspense fallback={<div className="p-8 text-center font-black uppercase text-slate-400">Loading Shop...</div>}>
+      <HomeClient 
+        initialProducts={isSanityEmpty ? MOCK_PRODUCTS : products} 
+        initialCategories={isSanityEmpty ? MOCK_CATEGORIES : categories} 
+      />
+    </Suspense>
   );
 }
 
